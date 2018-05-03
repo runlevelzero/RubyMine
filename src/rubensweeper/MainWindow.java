@@ -442,7 +442,7 @@ public class MainWindow extends javax.swing.JFrame {
             scale = 8;
             
         }
-        else if (hardRadio.isSelected()) grid = new Grid(9,9);
+
         grid.startGame();
         grid.setScale(scale);
         titleSlot.addMouseListener(ml);

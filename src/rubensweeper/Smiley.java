@@ -19,4 +19,5 @@ public class Smiley extends JLabel{
         setIcon(new ImageIcon("start.png", "La Bomba"));
     }
     
+    
 }

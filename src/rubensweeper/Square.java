@@ -5,6 +5,7 @@
  */
 package rubensweeper;
 
+import java.awt.Image;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
@@ -31,17 +32,24 @@ public class Square extends JLabel{
      *           if it says 9 it itself is a bomb
      */
     private int numBomb;
-    public static int x;
-    public static int y;
+    public int BOARDX;
+    public int BOARDY;
     private boolean clicked;
     private boolean flagged;
+    private int scaleFactor;
+    ImageIcon[] scaledImages;
+    public static boolean[][] boardPos;
     
-    public Square(int _x, int _y) {
+    public Square(int _x, int _y, int xMax, int yMax) {
         super();
-        numBomb = 0;
-        clicked = false;
-        y = _y;
-        x = _x;
+        scaledImages     = new ImageIcon[14];
+        numBomb          = 0;
+        clicked          = false;
+        BOARDX           = _x;
+        BOARDY           = _y;
+        boardPos         = new boolean[yMax][xMax];
+        boardPos[_y][_x] = true;
+        
         
     }
 
@@ -52,10 +60,14 @@ public class Square extends JLabel{
     public boolean isFlagged() {
         return flagged;
     }
+    
+    public void checkIfIsCorrectFlag(boolean correct) {
+        setIcon((this.flagged) ? scaledImages[12] : scaledImages[13]);
+    }
 
     public void setFlagged(boolean flagged) {
         this.flagged = flagged;
-        setIcon((this.flagged) ? new ImageIcon("Flag-32.png", "La Bomba") : new ImageIcon("Closed-32.png", "La Bomba"));
+        setIcon((this.flagged) ? scaledImages[11] : scaledImages[10]);
     }
     
     public void findNumBomb(Square[][] grid, int y, int x) {
@@ -77,8 +89,8 @@ public class Square extends JLabel{
         int totalNumBombsAround = 0;
         if(numBomb == 9) return;
         else{
-            for(int a = y - 1; a < y + 2; a++) {
-                for(int b = x - 1; b < x + 2; b++) {
+            for(int a = BOARDY - 1; a < BOARDY + 2; a++) {
+                for(int b = BOARDX - 1; b < BOARDX + 2; b++) {
                     if(a >= 0 && a < grid.length && b >= 0 && b < grid.length ) {
                         if(grid[a][b].getNumBomb() == 0 && !grid[a][b].isClicked()) {
                             
@@ -105,30 +117,62 @@ public class Square extends JLabel{
     public void setClicked(boolean clicked) {
         this.clicked = clicked;
         switch(numBomb) {
-            case 0: setIcon(new ImageIcon("0-32.png", "La Bomba"));
+            case 0: setIcon(scaledImages[0]);
                     break;
-            case 1: setIcon(new ImageIcon("1-32.png", "La Bomba"));
+            case 1: setIcon(scaledImages[1]);
                     break;
-            case 2: setIcon(new ImageIcon("2-32.png", "La Bomba"));
+            case 2: setIcon(scaledImages[2]);
                     break;
-            case 3: setIcon(new ImageIcon("3-32.png", "La Bomba"));
+            case 3: setIcon(scaledImages[3]);
                     break;
-            case 4: setIcon(new ImageIcon("4-32.png", "La Bomba"));
+            case 4: setIcon(scaledImages[4]);
                     break;
-            case 5: setIcon(new ImageIcon("5-32.png", "La Bomba"));
+            case 5: setIcon(scaledImages[5]);
                     break;
-            case 6: setIcon(new ImageIcon("6-32.png", "La Bomba"));
+            case 6: setIcon(scaledImages[6]);
                     break;
-            case 7: setIcon(new ImageIcon("7-32.png", "La Bomba"));
+            case 7: setIcon(scaledImages[7]);
                     break;
-            case 8: setIcon(new ImageIcon("8-32.png", "La Bomba"));
+            case 8: setIcon(scaledImages[8]);
                     break;
-            case 9: setIcon(new ImageIcon("Bomb-32.png", "La Bomba"));
+            case 9: setIcon(scaledImages[9]);
                     break;
-            default: setIcon(new ImageIcon("0-32.png", "La Bomba"));
+            default: setIcon(scaledImages[0]);
                      break;
         }
         
+    }
+    public void setXY( int x, int y) {
+        BOARDX = x;
+        BOARDY = y;
+    }
+    public boolean[][] getXY() {
+        return boardPos;
+    }
+    
+    public void createScale(int scale) {
+            scaledImages[0]  = shrinkToFit(new ImageIcon("0-32.png", "La Bomba"), scale);
+            scaledImages[1]  = shrinkToFit(new ImageIcon("1-32.png", "La Bomba"), scale);
+            scaledImages[2]  = shrinkToFit(new ImageIcon("2-32.png", "La Bomba"), scale);
+            scaledImages[3]  = shrinkToFit(new ImageIcon("3-32.png", "La Bomba"), scale);
+            scaledImages[4]  = shrinkToFit(new ImageIcon("4-32.png", "La Bomba"), scale);
+            scaledImages[5]  = shrinkToFit(new ImageIcon("5-32.png", "La Bomba"), scale);
+            scaledImages[6]  = shrinkToFit(new ImageIcon("6-32.png", "La Bomba"), scale);
+            scaledImages[7]  = shrinkToFit(new ImageIcon("7-32.png", "La Bomba"), scale);
+            scaledImages[8]  = shrinkToFit(new ImageIcon("8-32.png", "La Bomba"), scale);
+            scaledImages[9]  = shrinkToFit(new ImageIcon("Bomb-32.png", "La Bomba"), scale);
+            scaledImages[10] = shrinkToFit(new ImageIcon("Closed-32.png", "La Bomba"), scale);
+            scaledImages[11] = shrinkToFit(new ImageIcon("Flag-32.png", "La Bomba"), scale);
+            scaledImages[12] = shrinkToFit(new ImageIcon("CorrectFlag.png", "La Bomba"), scale);
+            scaledImages[13] = shrinkToFit(new ImageIcon("IncorrectFlag.png", "La Bomba"), scale);
+            setIcon(scaledImages[10]);
+            
+    }
+
+    private ImageIcon shrinkToFit(ImageIcon image, int scale) {
+        Image _image  = image.getImage();
+        Image _imageP = _image.getScaledInstance(scale, scale, Image.SCALE_SMOOTH);
+        return new ImageIcon(_imageP);
     }
     
 }
